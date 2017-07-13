@@ -21,3 +21,9 @@ bindkey -e
 bindkey '[B' backward-word
 bindkey '[F' forward-word
 ```
+## Terminal Color
+If you want to change a color, you may need to find out the color code of your terminal. Add this line to `~/.zshrc` and type `color` to get a list of color code and sampling on your terminal.
+
+```bash
+function color() { for code in {000..255}; do print -P -- "$code: %F{$code}Color%f"; done }
+```
