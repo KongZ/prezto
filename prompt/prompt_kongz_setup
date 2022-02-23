@@ -15,7 +15,7 @@ prompt_kongz_git_info() {
     if [[ -s "$_prompt_kongz_precmd_async_data" ]]; then
       alias typeset='typeset -g'
       source "$_prompt_kongz_precmd_async_data"
-      RPROMPT+='${git_info:+${(e)git_info[status]}}'
+#      RPROMPT+='${git_info:+${(e)git_info[status]}}'
       unalias typeset
     fi
 
@@ -43,16 +43,16 @@ function prompt_kongz_precmd {
   unsetopt XTRACE KSH_ARRAYS
 
   # Format PWD.
-  _prompt_kongz_pwd=$(promptpwd)
+  _prompt_kongz_pwd=$(prompt-pwd)
 
   # Define prompts.
-  RPROMPT='${editor_info[overwrite]}%(?:: %F{1}⏎%f)${VIM:+" %B%F{6}V%f%b"}'
+#  RPROMPT='${editor_info[overwrite]}%(?:: %F{1}⏎%f)${VIM:+" %B%F{6}V%f%b"}'
 
   # Kill the old process of slow commands if it is still running.
   if (( _prompt_kongz_precmd_async_pid > 0 )); then
     kill -KILL "$_prompt_kongz_precmd_async_pid" &>/dev/null
   fi
-
+ 
   # Compute slow commands in the background.
   trap prompt_kongz_git_info WINCH
   prompt_kongz_precmd_async &!
@@ -74,31 +74,33 @@ function prompt_kongz_setup {
 
   # Set editor-info parameters.
   zstyle ':prezto:module:editor:info:completing' format '%B%F{7}...%f%b'
-  zstyle ':prezto:module:editor:info:keymap:primary' format ' %B%F{196}❯%F{184}❯%F{34}❯%f%b'
-  zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format ' %F{3}♺%f'
-  zstyle ':prezto:module:editor:info:keymap:alternate' format ' %B%F{9}❮%F{10}❮%F{11}❮%f%b'
+  zstyle ':prezto:module:editor:info:keymap:primary' format '%B%F{196}❯%F{184}❯%F{34}❯%f%b'
+  zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format '%F{3}♺%f'
+  zstyle ':prezto:module:editor:info:keymap:alternate' format '%B%F{9}❮%F{10}❮%F{11}❮%f%b'
 
   # Set git-info parameters.
   zstyle ':prezto:module:git:info' verbose 'yes'
   zstyle ':prezto:module:git:info:action' format '%F{7}:%f%%B%F{9}%s%f%%b'
-  zstyle ':prezto:module:git:info:added' format ' %%B%F{2}✚%f%%b'
-  zstyle ':prezto:module:git:info:ahead' format ' %%B%F{13}⬆%f%%b'
-  zstyle ':prezto:module:git:info:behind' format ' %%B%F{13}⬇%f%%b'
-  zstyle ':prezto:module:git:info:branch' format ' %%B%F{9}%b%f%%b'
-  zstyle ':prezto:module:git:info:commit' format ' %%B%F{3}%.7c%f%%b'
-  zstyle ':prezto:module:git:info:deleted' format ' %%B%F{1}✖%f%%b'
-  zstyle ':prezto:module:git:info:modified' format '%%B%F{4}*%f%%b'
-  zstyle ':prezto:module:git:info:position' format ' %%B%F{13}%p%f%%b'
-  zstyle ':prezto:module:git:info:renamed' format ' %%B%F{5}➜%f%%b'
-  zstyle ':prezto:module:git:info:stashed' format ' %%B%F{6}✭%f%%b'
-  zstyle ':prezto:module:git:info:unmerged' format ' %%B%F{3}═%f%%b'
-  zstyle ':prezto:module:git:info:untracked' format ' %%B%F{7}◼%f%%b'
-  zstyle ':prezto:module:git:info:keys' format \
-    'status' '$(coalesce "%b" "%p" "%c")%s%A%B%S%a%d%m%r%U%u'
+  zstyle ':prezto:module:git:info:added' format '%%B%F{2}＋%f%%b'
+  zstyle ':prezto:module:git:info:ahead' format '%%B%F{13}⬆%f%%b'
+  zstyle ':prezto:module:git:info:behind' format '%%B%F{13}⬇%f%%b'
+  zstyle ':prezto:module:git:info:branch' format '%%B%F{9}%b%f%%b'
+  zstyle ':prezto:module:git:info:commit' format '%%B%F{3}%.7c%f%%b'
+  zstyle ':prezto:module:git:info:deleted' format '%%B%F{1}ｘ%f%%b'
+  zstyle ':prezto:module:git:info:modified' format '%%B%F{4}＊%f%%b'
+  zstyle ':prezto:module:git:info:position' format '%%B%F{13}%p%f%%b'
+  zstyle ':prezto:module:git:info:renamed' format '%%B%F{5}＞%f%%b'
+  zstyle ':prezto:module:git:info:stashed' format '%%B%F{6}°%f%%b'
+  zstyle ':prezto:module:git:info:unmerged' format '%%B%F{3}＝%f%%b'
+  zstyle ':prezto:module:git:info:untracked' format '%%B%F{7}？%f%%b'
+  zstyle ':prezto:module:git:info:keys' format 'status' '$(coalesce "%b" "%p" "%c")%s%A%B%S%a%d%m%r%U%u' 'rprompt' '$(coalesce "%b" "%p" "%c")%s%A%B%S%a%d%m%r%U%u'
 
   # Define prompts.
-  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{11}@%f%F{10}%m%f "}%F{45}${_prompt_kongz_pwd}%(!. %B%F{1}#%f%b.)${editor_info[keymap]} '
-  RPROMPT=''
+  PROMPT='${SSH_TTY:+"%F{9}%n%f%F{11}@%f%F{10}%m%f "%F{45}${_prompt_kongz_pwd}
+'
+  PROMPT+='${git_info:+${(e)git_info[status]}}'
+  PROMPT+='%(!. %B%F{1}#%f%b.)${editor_info[keymap]} '
+#  RPROMPT='$git_info[status]'
   SPROMPT='zsh: correct %F{1}%R%f to %F{2}%r%f [nyae]? '
 }
 
